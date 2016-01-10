@@ -101,7 +101,7 @@ The display :
 ![Display as a pie](docs/images/arangodb-pie.png)
 
 
-Other examples where the result is a list of values :
+Other examples :
 
 ![Display values](docs/images/arangodb-misc.png)
 
