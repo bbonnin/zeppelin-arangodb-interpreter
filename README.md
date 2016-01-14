@@ -3,6 +3,8 @@
 [ArangoDB](https://www.arangodb.com/) Interpreter for [Appache Zeppelin](https://zeppelin.incubator.apache.org/).
 This interpreter only supports AQL ([ArangoDB Query Language](https://docs.arangodb.com/Aql/)).
 
+> **Important** : the graph part of ArangoDB is not supported at the moment. Any help will be appreciate !
+
 ![Search pie](/docs/images/arangodb-pie.png)
 
 
