@@ -24,6 +24,12 @@ import com.arangodb.ArangoException;
 import com.arangodb.ArangoHost;
 import com.arangodb.entity.BaseDocument;
 
+/**
+ * Tests for basic queries.
+ *  
+ * @author Bruno Bonnin
+ *
+ */
 public class ArangoDbInterpreterTest {
 
     private static final String[] METHODS = { "GET", "PUT", "DELETE", "POST" };

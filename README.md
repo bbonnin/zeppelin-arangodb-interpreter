@@ -3,7 +3,7 @@
 [ArangoDB](https://www.arangodb.com/) Interpreter for [Appache Zeppelin](https://zeppelin.incubator.apache.org/).
 This interpreter only supports AQL ([ArangoDB Query Language](https://docs.arangodb.com/Aql/)).
 
-> **Important** : the graph part of ArangoDB is not supported at the moment. Any help will be appreciate !
+> **Important** : the graph part of ArangoDB is **PARTIALLY** supported at the moment. To test if you can use the data from the [Actors and Movies Database example](https://docs.arangodb.com/cookbook/GraphExampleActorsAndMovies.html). 
 
 ![Search pie](/docs/images/arangodb-pie.png)
 
@@ -82,7 +82,9 @@ content_length | date | request.headers[0] | request.headers[1] | request.method
 1234 | 2015-12-08T21:03:13.588Z | Accept: \*.\* | Host: apache.org | GET | /zeppelin/4cd001cd-c517-4fa9-b8e5-a06b8f4056c4 | 403
 
 
-Example :
+Examples :
+
+* Document database :
 
 ```
 | %arango
@@ -92,15 +94,47 @@ Example :
 |
 ```
 
-The display :
+  * The display :
 
-* as the table :
+    * as the table :
 
 ![Display as a table](docs/images/arangodb-table.png)
 
-* as a pie :
+    * as a pie :
 
 ![Display as a pie](docs/images/arangodb-pie.png)
+
+
+* Graph database :
+
+```
+| %arango
+|
+| FOR x IN actsIn COLLECT movie = x._to
+|   WITH COUNT INTO counter
+|   RETURN {movie: movie, nb_actors: counter}
+|
+<table>
+  <tr><th>nb_actors</th></th>movie</th></tr>
+  <tr><td>11.0</td></td>movies/AFewGoodMen</td></tr>
+  <tr><td>4.0</td></td>movies/AsGoodAsItGets</td></tr>
+  <tr><td>9.0</td></td>movies/JerryMaguire</td></tr>
+  <tr><td>3.0</td></td>movies/JoeVersustheVolcano</td></tr>
+  <tr><td>6.0</td></td>movies/SleeplessInSeattle</td></tr>
+  <tr><td>4.0</td></td>movies/SnowFallingonCedars</td></tr>
+  <tr><td>7.0</td></td>movies/StandByMe</td></tr>
+  <tr><td>3.0</td></td>movies/TheDevilsAdvocate</td></tr>
+  <tr><td>5.0</td></td>movies/TheMatrix</td></tr>
+  <tr><td>4.0</td></td>movies/TheMatrixReloaded</td></tr>
+  <tr><td>4.0</td></td>movies/TheMatrixRevolutions</td></tr>
+  <tr><td>6.0</td></td>movies/TopGun</td></tr>
+  <tr><td>5.0</td></td>movies/WhatDreamsMayCome</td></tr>
+  <tr><td>4.0</td></td>movies/WhenHarryMetSally</td></tr>
+  <tr><td>6.0</td></td>movies/YouveGotMail</td></tr>
+</table>
+
+```
+
 
 
 Other examples :
