@@ -1,7 +1,15 @@
 
 # [ArangoDB](https://www.arangodb.com/) Interpreter for [Appache Zeppelin](https://zeppelin.incubator.apache.org/).
 
-What is Apache Zeppelin ? this project aims to provide a web environment for easing data discovery, analytics and visualization. This is the GUI you should have in your company for processing and collaborate on your (big) data. It provides interpreters to interact with databases (SQL), to define processing of your data with Spark or Flink. This project is still an incubator Apache project, but it can be see as a important part of the future in the enterprise IT infrastructure.
+What is Apache Zeppelin ? this project aims to provide a web environment for easing data discovery, analytics and visualization. This is the GUI you should have in your company for processing and collaborate on your (big) data. It provides interpreters to interact with databases (such as SQL or CQL for example), to define processing of your data with Spark or Flink. This project is still an incubator Apache project, but it can be see as a important part of the future in the enterprise IT infrastructure.
+
+Apache Zeppelin is an incubator Apache project that aims to be a modern notebook for interactive data analytics. This environment allows users to access their data stored in many backend (Cassandra, PostgreSQL and other JDBC compliant database, …), define processing using Spark or Flink interpreters, visualize the data and share the notebooks.
+
+The ArangoDB interpreter for Apache Zeppelin aims to provide a new interpreter to query an ArangoDB database. This interpreter only supports AQL ([ArangoDB Query Language](https://docs.arangodb.com/Aql/)).
+
+
+
+https://github.com/bbonnin/zeppelin-arangodb-interpreter
 
 Basically, you have notebooks in which you can type commands, that are interpreted, the results are diplayed, and, depending on your result format, you can have access to charts for displaying your data.
 To have access to these charts, your data format must be a table.
@@ -34,7 +42,7 @@ content_length | date | request.headers[0] | request.headers[1] | request.method
 
 
 
-This interpreter only supports AQL ([ArangoDB Query Language](https://docs.arangodb.com/Aql/)).
+
 
 > **Important** : the graph part of ArangoDB is **PARTIALLY** supported at the moment. To test if you can use the data from the [Actors and Movies Database example](https://docs.arangodb.com/cookbook/GraphExampleActorsAndMovies.html). 
 
