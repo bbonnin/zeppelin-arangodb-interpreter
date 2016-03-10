@@ -4,13 +4,13 @@
 What is Apache Zeppelin ? This project aims to provide a web environment for easing data discovery, analytics and visualization. This is the GUI you should have in your company for processing and collaborate on your (big) data. It provides interpreters to interact with databases (Cassandra, PostgreSQL and other JDBC compliant database, …), to define processing of your data with Spark or Flink, etc. 
 
 
-The ArangoDB interpreter for Apache Zeppelin aims to provide a new interpreter to query an ArangoDB database. This interpreter only supports AQL ([ArangoDB Query Language](https://docs.arangodb.com/Aql/)).
-
-> **Important** : the graph part of ArangoDB is **PARTIALLY** supported at the moment. To test if you can use the data from the [Actors and Movies Database example](https://docs.arangodb.com/cookbook/GraphExampleActorsAndMovies.html). 
+The ArangoDB interpreter for Apache Zeppelin aims to provide a new interpreter to query an ArangoDB database. 
 
 
-## Flattened documents
-Basically, in Zeppelin, you have notebooks in which you can type commands, that are interpreted and the results are displayed. Depending on your result format, you can have access to charts for displaying your data.
+
+## Foreword about data format
+
+Basically, in Zeppelin, you have notebooks with paragraphs in which you can type commands, that are interpreted and the results are displayed. Depending on your result format, you can automatically have access to charts for displaying your data.
 
 To have access to these charts, your output data format must be a table, but with ArangoDB, the result of a query can contain a list of JSON documents, so, as it is hierarchical (not flat as a row in a SQL table). 
 
@@ -40,9 +40,6 @@ content_length | date | request.headers[0] | request.headers[1] | request.method
 
 
 
-![Search pie](images/arangodb-pie.png)
-
-
 ## How to use the interpreter
 
 ### Configuration
@@ -59,7 +56,9 @@ First, you have to configure the interpreter by setting the values of:
 
 In a paragraph, use `%arango` to select the ArangoDB interpreter and then input all commands.
 
-> **Important**: 
+> **Important**: The interpreter only supports AQL ([ArangoDB Query Language](https://docs.arangodb.com/Aql/)).
+
+
 
 ### Examples :
 
@@ -83,7 +82,7 @@ In a paragraph, use `%arango` to select the ArangoDB interpreter and then input 
 ![Display as a pie](images/arangodb-pie.png)
 
 
-* Graph database :
+* Graph database (to test it, you can use the data from the [Actors and Movies Database example](https://docs.arangodb.com/cookbook/GraphExampleActorsAndMovies.html)) :
 
 ```
 | %arango
@@ -94,16 +93,7 @@ In a paragraph, use `%arango` to select the ArangoDB interpreter and then input 
 |
 ```
 
-<table>
-  <tr><th>nb_actors</th><th>movie</th></tr>
-  <tr><td>11.0</td><td>movies/AFewGoodMen</td></tr>
-  <tr><td>4.0</td><td>movies/AsGoodAsItGets</td></tr>
-  <tr><td>9.0</td><td>movies/JerryMaguire</td></tr>
-  <tr><td>3.0</td><td>movies/JoeVersustheVolcano</td></tr>
-  <tr><td>6.0</td><td>movies/SleeplessInSeattle</td></tr>
-  <tr><td>4.0</td><td>movies/SnowFallingonCedars</td></tr>
-</table>
-
+![Display kino result](images/arangodb-kino.png)
 
 
 
@@ -113,3 +103,7 @@ In a paragraph, use `%arango` to select the ArangoDB interpreter and then input 
 
 
 This interpreter can be found on github : https://github.com/bbonnin/zeppelin-arangodb-interpreter
+
+
+
+
