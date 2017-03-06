@@ -3,7 +3,7 @@
 [ArangoDB](https://www.arangodb.com/) Interpreter for [Apache Zeppelin](https://zeppelin.incubator.apache.org/).
 This interpreter only supports AQL ([ArangoDB Query Language](https://docs.arangodb.com/Aql/)).
 
-> **Important** : the graph part of ArangoDB is **PARTIALLY** supported at the moment. To test if you can use the data from the [Actors and Movies Database example](https://docs.arangodb.com/cookbook/GraphExampleActorsAndMovies.html). 
+> **Important** : the graph part of ArangoDB is **PARTIALLY** supported at the moment. To test it, you can use the data from the [Actors and Movies Database example](https://docs.arangodb.com/cookbook/GraphExampleActorsAndMovies.html). 
 
 
 ![Search pie](/docs/images/arangodb-pie.png)
