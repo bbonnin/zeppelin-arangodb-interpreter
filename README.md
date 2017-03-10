@@ -8,6 +8,12 @@ This interpreter only supports AQL ([ArangoDB Query Language](https://docs.arang
 
 ![Search pie](/docs/images/arangodb-pie.png)
 
+## Versions
+
+Interpreter | ArangoDB
+------------|---------
+2.0         | 3.x
+1.0         | 2.7 
 
 ## Build
 It's a Maven project, so it's simple:
@@ -28,7 +34,7 @@ mkdir arangodb
 
 * Copy the jar of arangodb-interpreter in the directory `<ZEPPELIN_HOME>/interpreter/arangodb.
 
-* In `<ZEPPELIN HOME>/conf/zeppelin-site.xml`, add the interpreter class:
+* (optional, it is for older version of Zeppelin) In `<ZEPPELIN HOME>/conf/zeppelin-site.xml`, add the interpreter class:
 ```xml
 <property>
   <name>zeppelin.interpreters</name>
@@ -38,8 +44,13 @@ mkdir arangodb
 ```
 
 * Start Zeppelin:
+On Linux:
 ```bash
 <ZEPPELIN_HOME>/bin/zeppelin-daemon.sh start
+```
+or on Windows
+```bash
+<ZEPPELIN_HOME>\bin\zeppelin.cmd
 ```
 
 ## How to use the interpreter

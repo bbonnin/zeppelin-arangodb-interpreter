@@ -1,0 +1,42 @@
+[
+  {
+    "group": "arango",
+    "name": "arango",
+    "className": "io.millesabords.zeppelin.interpreter.arangodb.ArangoDbInterpreter",
+    "properties": {
+      "arangodb.host": {
+        "envName": "ARANGODB_HOST",
+        "propertyName": "arangodb.host",
+        "defaultValue": "localhost",
+        "description": "The host for ArangoDB"
+      },
+      "arangodb.port": {
+        "envName": "ARANGODB_PORT",
+        "propertyName": "arangodb.port",
+        "defaultValue": "8529",
+        "description": "The port for ArangoDB"
+      },
+      "arangodb.database": {
+        "envName": "ARANGODB_DATABASE",
+        "propertyName": "arangodb.database",
+        "defaultValue": "default",
+        "description": "The database name"
+      },
+      "arangodb.user": {
+        "envName": "ARANGODB_USER",
+        "propertyName": "arangodb.user",
+        "defaultValue": "",
+        "description": "Username for a basic authentication"
+      },
+      "arangodb.pwd": {
+        "envName": "ARANGODB_PWD",
+        "propertyName": "arangodb.pwd",
+        "defaultValue": "",
+        "description": "Password for a basic authentication"
+      }
+    },
+    "editor": {
+      "editOnDblClick": false
+    }
+  }
+]

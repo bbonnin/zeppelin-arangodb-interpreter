@@ -3,7 +3,6 @@ package io.millesabords.zeppelin.interpreter.arangodb;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -14,17 +13,16 @@ import java.util.TreeSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.zeppelin.interpreter.Interpreter;
 import org.apache.zeppelin.interpreter.InterpreterContext;
-import org.apache.zeppelin.interpreter.InterpreterPropertyBuilder;
 import org.apache.zeppelin.interpreter.InterpreterResult;
 import org.apache.zeppelin.interpreter.InterpreterResult.Code;
+import org.apache.zeppelin.interpreter.thrift.InterpreterCompletion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.arangodb.ArangoConfigure;
-import com.arangodb.ArangoDriver;
-import com.arangodb.ArangoException;
-import com.arangodb.ArangoHost;
-import com.arangodb.CursorResult;
+import com.arangodb.ArangoCursor;
+import com.arangodb.ArangoDB;
+import com.arangodb.ArangoDBException;
+import com.arangodb.ArangoDatabase;
 import com.github.wnameless.json.flattener.JsonFlattener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,10 +42,7 @@ public class ArangoDbInterpreter extends Interpreter {
     private static final List<String> COMMANDS = Arrays.asList("FOR", "RETURN", "FILTER",
             "SORT", "LIMIT", "LET", "COLLECT", "INSERT", "UPDATE", "REPLACE", "REMOVE", "UPSERT");
 
-    private static final String DEFAULT_HOST = "localhost";
-    private static final int DEFAULT_PORT = 8529;
-    private static final String DEFAULT_DATABASE = "default";
-
+   private static final List<InterpreterCompletion> SUGGESTIONS = new ArrayList<>();
 
     public static final String ARANGODB_HOST = "arangodb.host";
     public static final String ARANGODB_PORT = "arangodb.port";
@@ -56,23 +51,14 @@ public class ArangoDbInterpreter extends Interpreter {
     public static final String ARANGODB_PWD = "arangodb.pwd";
 
     static {
-        Interpreter.register(
-            "aql",
-            "arango",
-            ArangoDbInterpreter.class.getName(),
-            new InterpreterPropertyBuilder()
-                .add(ARANGODB_HOST, DEFAULT_HOST, "ArangoDB host")
-                .add(ARANGODB_PORT, Integer.toString(DEFAULT_PORT), "ArangoDB port")
-                .add(ARANGODB_DATABASE, DEFAULT_DATABASE, "Default database name")
-                .add(ARANGODB_USER, "", "Basic authentication user")
-                .add(ARANGODB_PWD, "", "Basic authentication password")
-                .build());
+        for (final String cmd: COMMANDS) {
+            SUGGESTIONS.add(new InterpreterCompletion(cmd, cmd));
+        }
     }
 
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private ArangoDriver driver;
-    private ArangoConfigure configure;
+    private ArangoDB arango;
 
     public ArangoDbInterpreter(Properties property) {
         super(property);
@@ -81,17 +67,14 @@ public class ArangoDbInterpreter extends Interpreter {
     @Override
     public void open() {
         try {
-            configure = new ArangoConfigure();
-            configure.setArangoHost(new ArangoHost(
-                    getProperty(ARANGODB_HOST), Integer.parseInt(getProperty(ARANGODB_PORT))));
-            configure.setDefaultDatabase(getProperty(ARANGODB_DATABASE));
-            if (!StringUtils.isEmpty(getProperty(ARANGODB_USER))) {
-                configure.setUser(getProperty(ARANGODB_USER));
-                configure.setPassword(getProperty(ARANGODB_PWD));
-            }
-            configure.init();
+            final ArangoDB.Builder builder = new ArangoDB.Builder()
+                    .host(getProperty(ARANGODB_HOST), Integer.parseInt(getProperty(ARANGODB_PORT)));
 
-            driver = new ArangoDriver(configure);
+            if (!StringUtils.isEmpty(getProperty(ARANGODB_USER))) {
+                builder.user(getProperty(ARANGODB_USER)).password(getProperty(ARANGODB_PWD));
+            }
+
+            arango = builder.build();
         }
         catch (final Exception e) {
             LOGGER.error("Open connection with ArangoDB", e);
@@ -100,8 +83,8 @@ public class ArangoDbInterpreter extends Interpreter {
 
     @Override
     public void close() {
-        if (configure != null) {
-            configure.shutdown();
+        if (arango != null) {
+            arango.shutdown();
         }
     }
 
@@ -112,7 +95,7 @@ public class ArangoDbInterpreter extends Interpreter {
         try {
             return interpretAql(cmd);
         }
-        catch (final ArangoException e) {
+        catch (final ArangoDBException e) {
             return new InterpreterResult(InterpreterResult.Code.ERROR, "Error : " + e.getMessage());
         }
     }
@@ -133,22 +116,22 @@ public class ArangoDbInterpreter extends Interpreter {
     }
 
     @Override
-    public List<String> completion(String s, int i) {
-        final List<String> suggestions = new ArrayList<>();
+    public List<InterpreterCompletion> completion(String s, int i) {
+
+        final List<InterpreterCompletion> suggestions = new ArrayList<>();
 
         if (StringUtils.isEmpty(s)) {
-          suggestions.addAll(COMMANDS);
+            suggestions.addAll(SUGGESTIONS);
         }
         else {
-          for (final String cmd : COMMANDS) {
-            if (cmd.contains(s.toUpperCase())) {
-              suggestions.add(cmd);
+            for (final String cmd : COMMANDS) {
+                if (cmd.contains(s.toUpperCase())) {
+                    suggestions.add(new InterpreterCompletion(cmd, cmd));
+                }
             }
-          }
         }
 
         return suggestions;
-
     }
 
     /**
@@ -156,20 +139,18 @@ public class ArangoDbInterpreter extends Interpreter {
      *
      * @param cmd Contains the AQL query
      * @return The result of the query
-     * @throws ArangoException Raised by the Arango driver in case of problem
+     * @throws ArangoDBException Raised by the Arango driver in case of problem
      */
-    private InterpreterResult interpretAql(String cmd) throws ArangoException {
+    private InterpreterResult interpretAql(String cmd) throws ArangoDBException {
 
-        //System.out.println(driver.executeAqlQueryJSON(cmd, null, null));
-        final CursorResult<Object> cursor = driver.executeAqlQuery(cmd, null, null, Object.class);
-        final Iterator<Object> iter = cursor.iterator();
+        final ArangoCursor<Object> cursor = db().query(cmd, null, null, Object.class);
         final List<Map<String, Object>> flattenDocs = new LinkedList<>();
         final Set<String> keys = new TreeSet<>();
 
         // First : get all the keys in order to build an ordered list of the values for each doc
         //
-        while (iter.hasNext()) {
-            final Object item = iter.next();
+        while (cursor.hasNext()) {
+            final Object item = cursor.next();
             Map<String, Object> flattenMap;
 
             if (item instanceof Map) {
@@ -214,6 +195,10 @@ public class ArangoDbInterpreter extends Interpreter {
         }
 
         return new InterpreterResult(Code.SUCCESS, InterpreterResult.Type.TABLE, buffer.toString());
+    }
+
+    private ArangoDatabase db() {
+        return arango.db(getProperty(ARANGODB_DATABASE));
     }
 
 }
